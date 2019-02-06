@@ -1,42 +1,47 @@
-== ri-analytics-classification-google-play-review Integration image:https://img.shields.io/badge/License-EPL%202.0-blue.svg["EPL 2.0", link="https://www.eclipse.org/legal/epl-2.0/"]
+== ri-analytics-classification-google-play-review image:https://img.shields.io/badge/License-EPL%202.0-blue.svg["EPL 2.0", link="https://www.eclipse.org/legal/epl-2.0/"]
 
 This microservice was created as a result of the OpenReq project funded by the European Union Horizon 2020 Research and Innovation programme under grant agreement No 732463.
 
-== Used Technologies
-- Docker (-> https://www.docker.com/)
-- SentiStrength (-> http://sentistrength.wlv.ac.uk/)
-- Stanford POS Tagger (-> https://nlp.stanford.edu/software/tagger.shtml)
-
-== Functionalities 
+== Technical description
+=== What does the microservice do
 The goal of this microservice is to classify a list of app reviews as either a __bug report__ or a __feature request__. 
 The source code to get classified reviews (including data cleaning, machine learning feature extraction, and classification based on pre-trained models code that is necessary to perform these tasks is bundled in a single Docker container). 
 The response of the microservice is a list of app reviews that now includes the class they belong to.
 
-== Installation
+=== Which technologies are used
+- Docker (-> https://www.docker.com/)
+- SentiStrength (-> http://sentistrength.wlv.ac.uk/)
+- Stanford POS Tagger (-> https://nlp.stanford.edu/software/tagger.shtml)
+
+=== How to install it
 *ri-analytics-classification-google-play-review* requires you to:
 
-1. aquire the sentistrength library from http://sentistrength.wlv.ac.uk/ 
+. aquire the sentistrength library from http://sentistrength.wlv.ac.uk/ 
 
-2. mount the SentiStrength.jar file in the Docker run environment (e.g., docker run --rm -d -v "<PATH_TO_SENTISTRENGTH>/SentiStrength.jar:/app/amazon-kinesis-client-python/sentistrength/SentiStrength.jar")
+. mount the SentiStrength.jar file in the Docker run environment (e.g., docker run --rm -d -v "<PATH_TO_SENTISTRENGTH>/SentiStrength.jar:/app/amazon-kinesis-client-python/sentistrength/SentiStrength.jar")
 
-3. aquire link:https://nlp.stanford.edu/software/stanford-postagger-full-2016-10-31.zip[stanford-postagger-full-2016-10-31.zip] and upload a zip file to google drive and set the Docker ARG __GDRIVE_DL_LINK__ to Google Drive sharing ID (docker build --build-arg "GDRIVE_DL_LINK=<SHARE_ID>"). This will download and unzip the Stanford POS Tagger files from Google Drive.
+. aquire link:https://nlp.stanford.edu/software/stanford-postagger-full-2016-10-31.zip[stanford-postagger-full-2016-10-31.zip] and upload a zip file to google drive and set the Docker ARG __GDRIVE_DL_LINK__ to Google Drive sharing ID (docker build --build-arg "GDRIVE_DL_LINK=<SHARE_ID>"). This will download and unzip the Stanford POS Tagger files from Google Drive.
 
-== How to Run The microservice
 Run the following commands to start the microservice:
 
 1) docker build -t --build-arg "GDRIVE_DL_LINK=<SHARE_ID>" ri-analytics-classification-google-play-review .
 2) docker run -v "<PATH_TO_SENTISTRENGTH>:/sentistrength/SentiStrength.jar" -p 9651:9651 ri-analytics-classification-google-play-review
 
 
-== Public APIs
+=== How to use it (high-level description)
 The API is documented by using Swagger2:
 
 - link:http://217.172.12.199/registry/#/services/ri-analytics-classification-google-play-review[Rendered Documentation]
 
 
-== How to contribute
+=== Notes for developers 
+None.
 
-See OpenReq project contribution link:[guidelines]
+=== Sources
+- Maalej, W., Kurtanović, Z., Nabil, H., & Stanik, C. (2016). On the automatic classification of app reviews. Requirements Engineering, 21(3), 311-331.
+
+== How to contribute
+See OpenReq project contribution link:https://github.com/OpenReqEU/OpenReq/blob/master/CONTRIBUTING.md[Guidlines]
 
 == License
 
