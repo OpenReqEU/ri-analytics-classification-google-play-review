@@ -36,7 +36,7 @@ RUN apt-get install unzip
 ARG GDRIVE_DL_LINK
 
 RUN gdown https://drive.google.com/uc?id=${GDRIVE_DL_LINK}
-RUN unzip stanford-postagger-full-2016-10-31.zip
+RUN unzip -d . stanford-postagger-full-2016-10-31.zip
 
 RUN [ "python", "-c", "import nltk; nltk.download('all')" ]
 

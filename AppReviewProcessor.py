@@ -1,3 +1,4 @@
+import os
 import re
 import shlex
 import subprocess
@@ -229,13 +230,12 @@ CONTRACTIONS_EXPANDED = {
 l = nltk.WordNetLemmatizer()
 t = nltk.RegexpTokenizer('[a-z]\w+')
 
-import os
 cwd = os.getcwd()
 print('PATH:', cwd)
 print('files:', os.listdir('.'))
 
-path_to_model = "models/english-bidirectional-distsim.tagger"
-path_to_jar = "stanford-postagger.jar"
+path_to_model = "stanford-postagger-full-2016-10-31/models/english-bidirectional-distsim.tagger"
+path_to_jar = "stanford-postagger-full-2016-10-31/stanford-postagger.jar"
 pos_tagger = nltk.StanfordPOSTagger(model_filename=path_to_model, path_to_jar=path_to_jar,
                                     java_options='-Xmx4060m -mx4060m')
 
