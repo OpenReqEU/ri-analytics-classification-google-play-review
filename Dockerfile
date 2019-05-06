@@ -3,16 +3,12 @@ FROM python:3.6
 # Install OpenJDK-8
 RUN \
     apt-get update  && \
-    apt install openjdk-8-jdk && \
+    apt-get -y install openjdk-8-jdk && \
     pip3 install flask && \
     pip3 install nltk && \
     pip3 install numpy && \
     pip3 install sklearn && \
-    pip3 install scipy && \
-
-    ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
-RUN export JAVA_HOME
-
+    pip3 install scipy
 
 RUN pip install gdown
 RUN apt-get install unzip
