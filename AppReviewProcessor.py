@@ -145,7 +145,8 @@ class NLPHelper:
     @staticmethod
     def count_tense_occurrences(review):
         tense = Tense()
-        pos_tagged = NLPHelper.pos_tag(review)
+        tokens = t.tokenize(review)
+        pos_tagged = NLPHelper.pos_tag(tokens)
 
         for (token, pos_tag) in pos_tagged:
             if pos_tag == "VB":
