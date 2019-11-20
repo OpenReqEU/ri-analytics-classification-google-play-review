@@ -57,6 +57,9 @@ class Predictor:
 
     @staticmethod
     def classify_reviews(processed_app_reviews=None):
+        global ml_model_binary_feature_request
+        global ml_model_binary_bug_report
+
         ml_features = ["feature_contains_keywords_bug", "feature_contains_keywords_feature_request",
                        "feature_tense_past", "feature_tense_present", "feature_tense_future", "feature_rating",
                        "feature_sentiment_score_pos", "feature_sentiment_score_neg",

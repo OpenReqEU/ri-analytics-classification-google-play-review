@@ -228,7 +228,7 @@ CONTRACTIONS_EXPANDED = {
 }
 
 l = nltk.WordNetLemmatizer()
-t = nltk.RegexpTokenizer('[a-z]\w+')
+t = nltk.RegexpTokenizer(r'[a-z]\w+')
 
 cwd = os.getcwd()
 print('PATH:', cwd)
