@@ -2,7 +2,6 @@ import os
 import re
 import shlex
 import subprocess
-from collections import OrderedDict
 
 import nltk
 from nltk.corpus import wordnet
@@ -16,13 +15,6 @@ class AppReviewProcessor:
         # needed for the full feature set
         self.vectorizer_bow = self.get_bow_vectorizer()
         self.vectorizer_bigram = self.get_bigram_vectorizer()
-
-    def process_many(self, app_reviews):
-        processed_app_reviews = list()
-        for app_review in app_reviews:
-            processed_app_reviews.append(self.process(app_review))
-
-        return processed_app_reviews
 
     def process(self, app_review):
         original_review = app_review["title"] + " " + app_review["body"]
@@ -92,143 +84,11 @@ CUSTOM_STOPWORDS = ['i', 'me', 'up', 'my', 'myself', 'we', 'our', 'ours',
                     'it', 'its', 'itself', 'they', 'them', 'their', 'theirs',
                     'themselves', 'am', 'is', 'are', 'a', 'an', 'the', 'and', 'in', 'of', 'so',
                     'out', 'on', 'up', 'down', 's', 't', 'to', 'be', 'your', 'have', 'app', 'too']
-CONTRACTIONS = ["ain't", "aren't", "can't", "can't've", "'cause", "could've", "couldn't", "couldn't've", "didn't",
-                "doesn't", "don't", "hadn't", "hadn't've", "hasn't", "haven't", "he'd", "he'd've", "he'll", "he'll've",
-                "he's", "how'd", "how'd'y", "how'll", "how's", "i'd", "i'd've", "i'll", "i'll've", "i'm", "i've",
-                "isn't", "it'd", "it'd've", "it'll", "it'll've", "it's", "let's", "ma'am", "mayn't", "might've",
-                "mightn't", "mightn't've", "must've", "mustn't", "mustn't've", "needn't", "needn't've", "o'clock",
-                "oughtn't", "oughtn't've", "shan't", "sha'n't", "shan't've", "she'd", "she'd've", "she'll", "she'll've",
-                "she's", "should've", "shouldn't", "shouldn't've", "so've", "so's", "that'd", "that'd've", "that's",
-                "there'd", "there'd've", "there's", "they'd", "they'd've", "they'll", "they'll've", "they're",
-                "they've", "to've", "wasn't", "we'd", "we'd've", "we'll", "we'll've", "we're", "we've", "weren't",
-                "what'll", "what'll've", "what're", "what's", "what've", "when's", "when've", "where'd", "where's",
-                "where've", "who'll", "who'll've", "who's", "who've", "why's", "why've", "will've", "won't", "won't've",
-                "would've", "wouldn't", "wouldn't've", "y'all", "y'all'd", "y'all'd've", "y'all're", "y'all've",
-                "you'd", "you'd've", "you'll", "you'll've", "you're", "you've"]
 KEYWORDS_BUG = "bug|crash|glitch|freeze|hang|not work|stop work|kill|dead|frustrate|froze|fix|close|error|gone|problem"
 KEYWORDS_FEATURE_REQUEST = "should|wish|add|miss|lack|need"
-CONTRACTIONS_EXPANDED = {
-    "ain't": "am not",  # are not; is not; has not; have not",
-    "aren't": "are not",  # ; am not",
-    "can't": "cannot",
-    "can't've": "cannot have",
-    "'cause": "because",
-    "could've": "could have",
-    "couldn't": "could not",
-    "couldn't've": "could not have",
-    "didn't": "did not",
-    "doesn't": "does not",
-    "don't": "do not",
-    "hadn't": "had not",
-    "hadn't've": "had not have",
-    "hasn't": "has not",
-    "haven't": "have not",
-    "he'd": "he had",  # , / he would",
-    "he'd've": "he would have",
-    "he'll": "he shall",  # / he will",
-    "he'll've": "he shall have",  # / he will have",
-    "he's": "he has",  # / he is",
-    "how'd": "how did",
-    "how'd'y": "how do you",
-    "how'll": "how will",
-    "how's": "how has",  # / how is / how does",
-    "i'd": "i had",  # / i would",
-    "i'd've": "i would have",
-    "i'll": "i will",  # / i shal",
-    "i'll've": "i will have",  # / i shall have",
-    "i'm": "i am",
-    "i've": "i have",
-    "isn't": "is not",
-    "it'd": "it would",  # / it had",
-    "it'd've": "it would have",
-    "it'll": "it will",  # / it shall",
-    "it'll've": "it will have",  # / it shall have",
-    "it's": "it is",  # / it has",
-    "let's": "let us",
-    "ma'am": "madam",
-    "mayn't": "may not",
-    "might've": "might have",
-    "mightn't": "might not",
-    "mightn't've": "might not have",
-    "must've": "must have",
-    "mustn't": "must not",
-    "mustn't've": "must not have",
-    "needn't": "need not",
-    "needn't've": "need not have",
-    "o'clock": "of the clock",
-    "oughtn't": "ought not",
-    "oughtn't've": "ought not have",
-    "shan't": "shall not",
-    "sha'n't": "shall not",
-    "shan't've": "shall not have",
-    "she'd": "she had",  # / she would",
-    "she'd've": "she would have",
-    "she'll": "she shall",  # / she will",
-    "she'll've": "she shall have",  # / she will have",
-    "she's": "she is",  # / she has",
-    "should've": "should have",
-    "shouldn't": "should not",
-    "shouldn't've": "should not have",
-    "so've": "so have",
-    "so's": "so is",  # / so as",
-    "that'd": "that would",  # / that had",
-    "that'd've": "that would have",
-    "that's": "that is",  # / that has",
-    "there'd": "there had",  # / / there would",
-    "there'd've": "there would have",
-    "there's": "there is",  # / there has",
-    "they'd": "they had",  # / they would",
-    "they'd've": "they would have",
-    "they'll": "they shall / they will",
-    "they'll've": "they will have",  # / they shall have",
-    "they're": "they are",
-    "they've": "they have",
-    "to've": "to have",
-    "wasn't": "was not",
-    "we'd": "we had ",  # / we would",
-    "we'd've": "we would have",
-    "we'll": "we will",
-    "we'll've": "we will have",
-    "we're": "we are",
-    "we've": "we have",
-    "weren't": "were not",
-    "what'll": "what will",  # / what will",
-    "what'll've": "what will have",  # / what shall have",
-    "what're": "what are",
-    "what's": "what is",  # / what has",
-    "what've": "what have",
-    "when's": "when is ",  # / when has",
-    "when've": "when have",
-    "where'd": "where did",
-    "where's": "where is",  # / where has",
-    "where've": "where have",
-    "who'll": "who will",  # / who will",
-    "who'll've": "who will have ",  # / who will have",
-    "who's": "who is",  # / who has",
-    "who've": "who have",
-    "why's": "why is",  # / why has",
-    "why've": "why have",
-    "will've": "will have",
-    "won't": "will not",
-    "won't've": "will not have",
-    "would've": "would have",
-    "wouldn't": "would not",
-    "wouldn't've": "would not have",
-    "y'all": "you all",
-    "y'all'd": "you all would",
-    "y'all'd've": "you all would have",
-    "y'all're": "you all are",
-    "y'all've": "you all have",
-    "you'd": "you had",  # / you would",
-    "you'd've": "you would have",
-    "you'll": "you will",  # / you shall",
-    "you'll've": "you will have",  # / you shall have",
-    "you're": "you are",
-    "you've": "you have"
-}
 
 l = nltk.WordNetLemmatizer()
-t = nltk.RegexpTokenizer('[a-z]\w+')
+t = nltk.RegexpTokenizer(r'[a-z]\w+')
 
 cwd = os.getcwd()
 print('PATH:', cwd)
@@ -268,37 +128,8 @@ class NLPHelper:
         return " ".join([w for w in text.split() if w not in CUSTOM_STOPWORDS])
 
     @staticmethod
-    def remove_tokens(text, tokens):
-        return " ".join([w for w in text.split() if w not in tokens])
-
-    @staticmethod
-    def expand_contraction(text):
-        """expands word if word is a contraction
-        :param text to check :returns text with expanded words"""
-        expanded_contraction_sentence = ''
-        for word in text.split():
-            word = word.replace("’", "'")
-            if word in CONTRACTIONS_EXPANDED.keys():
-                word = CONTRACTIONS_EXPANDED[word]
-            expanded_contraction_sentence += (' ' + word)
-        return expanded_contraction_sentence.strip()
-
-    @staticmethod
-    def remove_duplicated_words(text):
-        return ' '.join(OrderedDict((w, w) for w in text.split()).keys())
-
-    @staticmethod
     def pos_tag(text):
         return pos_tagger.tag(text)
-
-    @staticmethod
-    def extract_keyword_and_remove_from_text(keywords, text):
-        found_keywords = re.findall(keywords, text, re.IGNORECASE)
-        cleaned_text = " ".join(
-            [w for w in text.split() if w not in found_keywords])
-        print("found_keywords", found_keywords,
-              " | cleaned text: ", cleaned_text)
-        return found_keywords, cleaned_text
 
     @staticmethod
     def extract_keyword_freq(feature="bug", text=""):
@@ -308,40 +139,23 @@ class NLPHelper:
             return len(re.findall(KEYWORDS_FEATURE_REQUEST, text, re.IGNORECASE))
 
     @staticmethod
-    def keep_only_words_with_pos_tags(review, tags):
-        tokens = t.tokenize(review)
-        pos_tagged = NLPHelper.pos_tag(tokens)
-        output_review = ""
-        for (token, pos_tag) in pos_tagged:
-            if pos_tag in tags:
-                output_review += token + " "
-        return output_review
-
-    @staticmethod
     def extract_word_cont(text):
         return len(text.split())
 
     @staticmethod
     def count_tense_occurrences(review):
         tense = Tense()
-        pos_tagged = NLPHelper.pos_tag(review)
+        tokens = t.tokenize(review)
+        pos_tagged = NLPHelper.pos_tag(tokens)
 
         for (token, pos_tag) in pos_tagged:
-            if pos_tag == "VB":
-                tense.no_present = tense.no_present + 1
-            elif pos_tag == "VBD":
-                tense.no_past = tense.no_past + 1
-            elif pos_tag == "VBG":
-                tense.no_present = tense.no_present + 1
-            elif pos_tag == "VBN":
-                tense.no_past = tense.no_past + 1
-            elif pos_tag == "VBP":
-                tense.no_present = tense.no_present + 1
-            elif pos_tag == "VBZ":
-                tense.no_present = tense.no_present + 1
+            if pos_tag in ["VB", "VBG", "VBP", "VBZ"]:
+                tense.no_present += 1
+            elif pos_tag in ["VBD", "VBN"]:
+                tense.no_past += 1
 
             if token in ["will", "ll", "shall"]:
-                tense.no_future = tense.no_future + 1
+                tense.no_future += 1
 
         return tense
 
@@ -382,8 +196,3 @@ class Tense:
         self.no_present = 0
         self.no_past = 0
         self.no_future = 0
-
-
-if __name__ == '__main__':
-    print(NLPHelper.expand_contraction(
-        "cannot able to login.. always the server doesn't work.."))
