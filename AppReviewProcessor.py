@@ -149,21 +149,13 @@ class NLPHelper:
         pos_tagged = NLPHelper.pos_tag(tokens)
 
         for (token, pos_tag) in pos_tagged:
-            if pos_tag == "VB":
-                tense.no_present = tense.no_present + 1
-            elif pos_tag == "VBD":
-                tense.no_past = tense.no_past + 1
-            elif pos_tag == "VBG":
-                tense.no_present = tense.no_present + 1
-            elif pos_tag == "VBN":
-                tense.no_past = tense.no_past + 1
-            elif pos_tag == "VBP":
-                tense.no_present = tense.no_present + 1
-            elif pos_tag == "VBZ":
-                tense.no_present = tense.no_present + 1
+            if pos_tag in ["VB", "VBG", "VBP", "VBZ"]:
+                tense.no_present += 1
+            elif pos_tag in ["VBD", "VBN"]:
+                tense.no_past += 1
 
             if token in ["will", "ll", "shall"]:
-                tense.no_future = tense.no_future + 1
+                tense.no_future += 1
 
         return tense
 
