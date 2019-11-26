@@ -4,6 +4,10 @@ from flask import Flask, json, jsonify, logging, request
 
 from Processor import Processor
 
+with open('./config.json') as config_file:
+    CONFIG = json.load(config_file)
+
+
 app = Flask(__name__)
 
 ###########################
@@ -28,4 +32,5 @@ def get_classification_result():
 
 if __name__ == "__main__":
     # app.logger.setLevel(level=logging.DEBUG)
-    app.run(host="0.0.0.0", port=9651)
+        app.run(debug=False, threaded=False,
+                host=CONFIG['HOST'], port=CONFIG['PORT'])
